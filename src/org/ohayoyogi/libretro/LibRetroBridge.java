@@ -34,6 +34,33 @@ public class LibRetroBridge {
         LibRetroBridge.refreshVideoNative(argbPixels, x, y, width, height);
     }
 
+    /**
+     * How far the pen moves for this character, or 0 if the platform has no glyph for it.
+     *
+     * A MIDlet's own font covers 256 characters. Everything past that -- Japanese, most
+     * obviously -- has to come from whatever the device itself provides, which is the
+     * frontend's business rather than the MIDP implementation's.
+     */
+    public static native int glyphAdvanceNative(int code, int size);
+
+    /**
+     * Draw one character into a surface, and return how far the pen moved.
+     *
+     * Compositing happens on the native side, into the caller's own pixel array, so no
+     * per-pixel loop runs in Java.
+     *
+     * penX/baselineY are in surface coordinates, with baselineY on the text baseline, as
+     * every glyph's bearing is expressed relative to it. The clip rectangle is applied
+     * here, so the caller does not need to clip first.
+     *
+     * Returns 0 without drawing when the platform has no glyph.
+     */
+    public static native int drawGlyphNative(int[] surface, int stride,
+                                             int penX, int baselineY,
+                                             int code, int size, int colour,
+                                             int clipXmin, int clipYmin,
+                                             int clipXmax, int clipYmax);
+
     public int createSMAFPlayer() {
         return LibRetroBridge.createSMAFPlayerNative();
     }
